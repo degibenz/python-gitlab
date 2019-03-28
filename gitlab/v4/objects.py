@@ -1201,6 +1201,12 @@ class ProjectBoardManager(NoUpdateMixin, RESTManager):
     _create_attrs = (('name', ), tuple())
 
 
+class ProjectBranchSearchMixin(object):
+    def search(self, branch):
+        url = f"{self.path}?search={branch}"
+        server_data = self.gitlab.http_get(url)
+        return server_data
+        
 class ProjectBranch(ObjectDeleteMixin, RESTObject):
     _id_attr = 'name'
 
@@ -1248,7 +1254,7 @@ class ProjectBranch(ObjectDeleteMixin, RESTObject):
         self._attrs['protected'] = False
 
 
-class ProjectBranchManager(NoUpdateMixin, RESTManager):
+class ProjectBranchManager(NoUpdateMixin, RESTManager, ProjectBranchSearchMixin):
     _path = '/projects/%(project_id)s/repository/branches'
     _obj_cls = ProjectBranch
     _from_parent_attrs = {'project_id': 'id'}
